@@ -1,0 +1,38 @@
+# Python environment
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Dataset
+data/raw/
+data/processed/
+
+# Trained models
+models/
+*.keras
+*.h5
+*.joblib
+
+# MLflow
+mlruns/
+mlartifacts/
+mlflow.db
+
+# Accidental local folders
+%LOCALAPPDATA%/
+
+# Environment variables and secrets
+.env
+.env.*
+
+# Testing and cache
+.pytest_cache/
+.coverage
+.mypy_cache/
+.ipynb_checkpoints/
+
+# Generated image review files
+reports/moderate_review/
+reports/*.jpg
+reports/*.jpeg
