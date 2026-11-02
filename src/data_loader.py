@@ -3,7 +3,11 @@ from pathlib import Path
 import tensorflow as tf
 
 # Dataset location
-DATASET_DIR = Path("data/processed")
+import os
+
+DATASET_DIR = Path(
+    os.getenv("DATASET_DIR", "data/processed")
+)
 
 # Image settings
 IMAGE_SIZE = (224, 224)

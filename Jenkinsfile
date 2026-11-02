@@ -2,6 +2,10 @@
 pipeline {
     agent any
 
+    environment {
+        DATASET_DIR = 'D:\\car-accident-mlops\\data\\processed'
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -19,9 +23,26 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 bat '''
-                    py -3.12 -m venv .venv
+                    if not exist .venv\\Scripts\\python.exe (
+                        py -3.12 -m venv .venv
+                    )
                     .venv\\Scripts\\python.exe -m pip install --upgrade pip
                     .venv\\Scripts\\python.exe -m pip install -r requirements.txt
+                '''
+            }
+        }
+
+        stage('Check Dataset') {
+            steps {
+                bat '''
+                    echo Checking training dataset...
+                    if not exist "%DATASET_DIR%\\training" exit /b 1
+
+                    echo Checking validation dataset...
+                    if not exist "%DATASET_DIR%\\validation" exit /b 1
+
+                    dir "%DATASET_DIR%\\training"
+                    dir "%DATASET_DIR%\\validation"
                 '''
             }
         }
@@ -37,12 +58,31 @@ pipeline {
                 bat '.venv\\Scripts\\python.exe -m pytest tests/ -v'
             }
         }
+
+        stage('Train ML Model') {
+            steps {
+                echo 'Starting MobileNetV2 vehicle damage model training...'
+
+                bat '''
+                    .venv\\Scripts\\python.exe -m src.train
+                '''
+            }
+        }
+
+        stage('Archive Trained Model') {
+            steps {
+                archiveArtifacts artifacts: 'models/*.keras',
+                                 fingerprint: true
+            }
+        }
     }
 
     post {
         success {
             echo 'Vehicle Damage MLOps pipeline completed successfully!'
+            echo 'Model training and archiving completed.'
         }
+
         failure {
             echo 'Pipeline failed. Please check the console output.'
         }

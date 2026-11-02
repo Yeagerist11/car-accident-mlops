@@ -2,8 +2,8 @@
 from pathlib import Path
 import tensorflow as tf
 
-from data_loader import load_datasets
-from model import build_model
+from src.data_loader import load_datasets
+from src.model import build_model
 
 # Training settings
 EPOCHS = 10
