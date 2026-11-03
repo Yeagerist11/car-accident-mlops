@@ -4,6 +4,7 @@ pipeline {
 
     environment {
         DATASET_DIR = 'D:\\car-accident-mlops\\data\\processed'
+        MLFLOW_TRACKING_URI = 'sqlite:///D:/car-accident-mlops/mlflow.db'
     }
 
     stages {
@@ -47,6 +48,18 @@ pipeline {
             }
         }
 
+        stage('Check MLflow Database') {
+            steps {
+                bat '''
+                    if not exist "D:\\car-accident-mlops\\mlflow.db" (
+                        echo MLflow database not found!
+                        exit /b 1
+                    )
+                    echo MLflow database found.
+                '''
+            }
+        }
+
         stage('Check Python Syntax') {
             steps {
                 bat '.venv\\Scripts\\python.exe -m compileall -q src api tests'
@@ -59,9 +72,9 @@ pipeline {
             }
         }
 
-        stage('Train ML Model') {
+        stage('Train ML Model with MLflow') {
             steps {
-                echo 'Starting MobileNetV2 vehicle damage model training...'
+                echo 'Training MobileNetV2 and tracking experiment with MLflow...'
 
                 bat '''
                     .venv\\Scripts\\python.exe -m src.train
@@ -80,7 +93,7 @@ pipeline {
     post {
         success {
             echo 'Vehicle Damage MLOps pipeline completed successfully!'
-            echo 'Model training and archiving completed.'
+            echo 'Model training, MLflow tracking and archiving completed.'
         }
 
         failure {
