@@ -1,4 +1,5 @@
 
+import os
 import streamlit as st
 import tensorflow as tf
 import numpy as np
@@ -12,7 +13,12 @@ st.set_page_config(
 )
 
 # Model configuration
-MODEL_PATH = "models/vehicle_damage_finetuned_mlflow.keras"
+
+
+MODEL_PATH = os.getenv(
+    "MODEL_PATH",
+    "models/vehicle_damage_finetuned_mlflow.keras"
+)
 
 CLASS_NAMES = ["Minor", "Moderate", "Severe"]
 
