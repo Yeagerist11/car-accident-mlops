@@ -20,7 +20,12 @@ pipeline {
                 bat 'py -3.12 --version'
             }
         }
-
+        stage('Check Docker') {
+            steps {
+                    bat 'docker --version'
+                    bat 'docker info'
+            }
+}
         stage('Install Dependencies') {
             steps {
                 bat '''
